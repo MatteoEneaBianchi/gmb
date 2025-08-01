@@ -3,4 +3,24 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/css/style.css">
+{% assign words = page.content | downcase | split: " " | uniq %}
+{% assign related_docs = "" | split: "" %}
+
+{% for doc in site.docs %}
+  {% if doc.url != page.url %}
+    {% assign score = 0 %}
+    {% for word in words %}
+      {% if word.size > 4 and doc.content contains word %}
+        {% assign score = score | plus: 1 %}
+      {% endif %}
+    {% endfor %}
+    {% if score > 5 %}
+      {% assign related_docs = related_docs | push: doc %}
+    {% endif %}
+  {% endif %}
+{% endfor %}
+
+{% for doc in related_docs limit:3 %}
+  <link rel="related" href="{{ doc.url }}" title="{{ doc.title }}">
+{% endfor %}
 </head>
